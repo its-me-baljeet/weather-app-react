@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import Form from './components/Form';
 import Card from './components/Card';
+import DaysForecastCard from './components/DaysForecastCard';
 
 function App() {
   const [city, setCity] = useState("Moradabad");
   const [weatherData, setWeatherData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [forecastData, setForecastData] = useState(null)
 
   useEffect(() => {
     async function getWeatherData() {
@@ -14,7 +16,18 @@ function App() {
         const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=132b9ec6eb9edd76256fdfa3764ad6a5&units=metric`;
         const resp = await fetch(url);
         const data = await resp.json();
-        console.log(data)
+        const latitude = data?.coord?.lat;
+        const longitude = data?.coord?.lon;
+
+        if (latitude && longitude) {
+          // Second API call - forecast using coordinates from first response
+          const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${data.coord.lat}&lon=${data.coord.lon}&appid=132b9ec6eb9edd76256fdfa3764ad6a5&units=metric`;
+          const forecastResp = await fetch(forecastUrl);
+          const forecastData = await forecastResp.json();
+          console.log(forecastData);
+          setForecastData(forecastData);
+        }
+        // console.log(data)
         setWeatherData(data);
       }
       catch (err) {
@@ -39,11 +52,22 @@ function App() {
         {
           !isLoading && weatherData?.cod == 404 && <p>City not found!</p>
         }
-        {
-          !isLoading && weatherData && weatherData?.cod < 400 && <Card mainData={main} name={name} />
-        }
+        <div>
+          <div>
 
+            {
+              !isLoading && weatherData && weatherData?.cod < 400 && <Card mainData={main} name={name} />
+            }
+          </div>
+          <div>
+
+          </div>
+        </div>
+        {
+          !isLoading && forecastData && forecastData?.cod < 400 && <DaysForecastCard forecastData={forecastData} />
+        }
       </div>
+
     </div>
   )
 }
