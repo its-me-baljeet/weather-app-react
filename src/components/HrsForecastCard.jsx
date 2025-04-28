@@ -18,7 +18,7 @@ const HrsForecastCard = ({ forecastData, theme }) => {
                     const timeString = `${formattedHours}:${formattedMinutes} ${ampm}`;
 
                     return (
-                        <div className="flex flex-col items-center w-24" key={idx}>
+                        <div className="flex flex-col items-center w-24 text-center" key={idx}>
                             <p>{timeString}</p>
                             {getWeatherIcon(forecast.weather[0].id, 50)}
                             <p className={`${isLight ? 'text-black' : 'text-white'} text-lg`}>{Math.round(forecast.main.temp)}°C</p>
