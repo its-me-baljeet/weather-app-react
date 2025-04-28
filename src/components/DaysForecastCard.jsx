@@ -1,26 +1,21 @@
+import { getWeatherIcon } from "../utils/weatherIcons";
+
 const DaysForecastCard = ({ forecastData }) => {
-    const dailyNoonForecasts = forecastData.list.filter(forecast => {
-        return forecast.dt_txt.includes('12:00:00');
-    });
-    console.log(dailyNoonForecasts)
+    const dailyNoonForecasts = forecastData?.list.filter(forecast => forecast.dt_txt.includes('12:00:00'));
 
     return (
-        <div className="w-full mt-4">
-            <h3 className="text-xl font-semibold mb-2">5-Day Forecast</h3>
-            <div className="flex justify-between overflow-x-auto">
+        <div className="w-full rounded-2xl font-semibold">
+            <h3 className="text-md font-semibold mb-5 text-gray-400">5-DAY FORECAST</h3>
+            <div className="w-full flex flex-col gap-5 overflow-x-auto">
                 {dailyNoonForecasts.map((forecast, index) => {
                     const date = new Date(forecast.dt_txt);
                     const dayOfWeek = index === 0 ? "Today" : date.toLocaleDateString('en-US', { weekday: 'short' });
+
                     return (
-                        <div key={index} className="flex-shrink-0 p-3 bg-gray-700 rounded-lg text-center mx-1 min-w-[100px]">
-                            <p className="font-bold">{dayOfWeek}</p>
-                            <img
-                                src={`https://openweathermap.org/img/wn/${forecast.weather[0].icon}.png`}
-                                alt={forecast.weather[0].description}
-                                className="mx-auto"
-                            />
-                            <p className="text-lg font-medium">{Math.round(forecast.main.temp)}°C</p>
-                            <p className="text-xs">{forecast.weather[0].description}</p>
+                        <div key={index} className="flex justify-between items-center p-4 border-b-2 border-gray-500 text-sm sm:text-base">
+                            <p>{dayOfWeek}</p>
+                            {getWeatherIcon(forecast.weather[0].id, 40)}
+                            <p>{Math.round(forecast.main.temp)}°C</p>
                         </div>
                     );
                 })}

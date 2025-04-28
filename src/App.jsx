@@ -1,13 +1,27 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 import Form from './components/Form';
 import Card from './components/Card';
 import DaysForecastCard from './components/DaysForecastCard';
+import HrsForecastCard from './components/HrsForecastCard';
+import Description from './components/Description';
+import { FiMoon } from "react-icons/fi";
+import { MdOutlineWbSunny } from "react-icons/md";
 
 function App() {
   const [city, setCity] = useState("Moradabad");
+  const [theme, setTheme] = useState("dark");
   const [weatherData, setWeatherData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [forecastData, setForecastData] = useState(null)
+  const [forecastData, setForecastData] = useState(null);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) setTheme(savedTheme);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("theme", theme);
+  }, [theme]);
 
   useEffect(() => {
     async function getWeatherData() {
@@ -20,56 +34,62 @@ function App() {
         const longitude = data?.coord?.lon;
 
         if (latitude && longitude) {
-          // Second API call - forecast using coordinates from first response
-          const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${data.coord.lat}&lon=${data.coord.lon}&appid=132b9ec6eb9edd76256fdfa3764ad6a5&units=metric`;
+          const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=132b9ec6eb9edd76256fdfa3764ad6a5&units=metric`;
           const forecastResp = await fetch(forecastUrl);
           const forecastData = await forecastResp.json();
-          console.log(forecastData);
           setForecastData(forecastData);
         }
-        // console.log(data)
         setWeatherData(data);
-      }
-      catch (err) {
-        console.log(err)
-      }
-      finally {
+      } catch (err) {
+        console.error(err);
+      } finally {
         setIsLoading(false);
       }
     }
     getWeatherData();
   }, [city]);
-  const { main, name } = weatherData ? weatherData : {};
+
+  const { main, name, weather } = weatherData || {};
+  const textColor = theme === "light" ? "text-black" : "text-white";
 
   return (
-    <div className='h-screen bg-gray-900 flex justify-center items-center flex-col gap-3'>
-      <p className='text-5xl font-bold text-white'>Weather</p>
-      <div className='h-[60vh] w-[50vw] bg-gray-600 rounded-xl text-white flex flex-col justify-start items-center gap-5 p-5'>
-        <Form city={city} setCity={setCity} />
-        {
-          isLoading && <p>Loading...</p>
-        }
-        {
-          !isLoading && weatherData?.cod == 404 && <p>City not found!</p>
-        }
-        <div>
-          <div>
+    <div className="relative min-h-screen w-screen flex flex-col px-4 py-5 md:px-10">
+      {/* Background layers */}
+      <div className={`absolute inset-0 transition-opacity duration-700 ${theme === "light" ? "opacity-100" : "opacity-0"} bg-gradient-to-b from-blue-100 via-blue-200 to-blue-300`}></div>
+      <div className={`absolute inset-0 transition-opacity duration-700 ${theme === "dark" ? "opacity-100" : "opacity-0"} bg-gradient-to-b from-gray-700 via-gray-800 to-black`}></div>
 
-            {
-              !isLoading && weatherData && weatherData?.cod < 400 && <Card mainData={main} name={name} />
-            }
-          </div>
-          <div>
-
-          </div>
+      {/* Content */}
+      <div className={`w-full rounded-xl ${textColor} flex flex-col md:flex-row gap-5 relative z-10`}>
+        <div className="w-full md:w-[70%] flex flex-col gap-10">
+          <Form city={city} setCity={setCity} theme={theme} />
+          {isLoading && <p>Loading...</p>}
+          {!isLoading && weatherData?.cod === 404 && <p>City not found!</p>}
+          {!isLoading && weatherData && weatherData?.cod < 400 && (
+            <>
+              <Card weather={weather} mainData={main} name={name} theme={theme} />
+              <HrsForecastCard forecastData={forecastData} theme={theme} />
+              <Description weatherData={weatherData} theme={theme} />
+            </>
+          )}
         </div>
-        {
-          !isLoading && forecastData && forecastData?.cod < 400 && <DaysForecastCard forecastData={forecastData} />
-        }
-      </div>
 
+        <div className="w-full md:w-[30%] flex flex-col gap-5">
+          {/* Theme Toggle Button */}
+          <div className="self-end md:self-start">
+            <button
+              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+              className={`px-4 py-2 rounded-lg ${theme === "light" ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-800 text-white'} transition duration-700 text-2xl font-semibold`}
+            >
+              {theme === "light" ? <FiMoon /> : <MdOutlineWbSunny />}
+            </button>
+          </div>
+          {!isLoading && weatherData && weatherData?.cod < 400 && (
+            <DaysForecastCard forecastData={forecastData} theme={theme} />
+          )}
+        </div>
+      </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
