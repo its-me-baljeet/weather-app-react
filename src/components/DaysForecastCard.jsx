@@ -12,7 +12,7 @@ const DaysForecastCard = ({ forecastData }) => {
                     const dayOfWeek = index === 0 ? "Today" : date.toLocaleDateString('en-US', { weekday: 'short' });
 
                     return (
-                        <div key={index} className="flex justify-between items-center p-4 border-b-2 border-gray-500 text-sm sm:text-base">
+                        <div key={index} className="flex justify-between items-center border-gray-500 shadow-md text-sm sm:text-base backdrop-blur-md p-5 rounded-md">
                             <p>{dayOfWeek}</p>
                             {getWeatherIcon(forecast.weather[0].id, 40)}
                             <p>{Math.round(forecast.main.temp)}°C</p>
