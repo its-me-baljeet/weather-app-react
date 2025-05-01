@@ -75,6 +75,7 @@ function App() {
     <div className="relative min-h-screen w-screen flex flex-col px-4 py-5 md:px-10">
       {/* VIDEO BACKGROUND */}
       <video
+        preload='auto'
         key={backgroundVideo}
         autoPlay
         muted
