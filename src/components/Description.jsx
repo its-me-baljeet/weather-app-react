@@ -13,8 +13,8 @@ const Description = ({ weatherData }) => {
                     { label: "Pressure", value: `${Math.round(pressure)} hPa` },
                     { label: "Humidity", value: `${Math.round(humidity)} %` },
                     { label: "Wind", value: `${speed} m/sec` },
-                    { label: "Ground Level", value: grnd_level },
-                    { label: "Sea Level", value: sea_level },
+                    { label: "Ground Level", value: `${grnd_level} hPa` },
+                    { label: "Sea Level", value: `${sea_level} hPa` },
                     { label: "Visibility", value: `${visibility / 1000} km` },
                     { label: "Description", value: description },
                 ].map((item, idx) => (

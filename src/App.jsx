@@ -5,6 +5,7 @@ import DaysForecastCard from './components/DaysForecastCard';
 import HrsForecastCard from './components/HrsForecastCard';
 import Description from './components/Description';
 import SunRiseSet from './components/SunRiseSet';
+import SkeletonCard from './components/SkeletonCard';
 
 
 function App() {
@@ -86,36 +87,42 @@ function App() {
       <div className={`fixed top-0 left-0 w-full h-full z-0 bg-black/50`}></div>
 
       {/* Content */}
-      <div className={`w-full rounded-xl text-white flex flex-col md:flex-row gap-5 relative z-10 font-poppins`}>
-        <div className="w-full md:w-[70%] flex flex-col gap-5">
-          <Form city={city} setCity={setCity} />
-          {isLoading && <p>Loading...</p>}
-          {!isLoading && weatherData?.cod === "404" && (
-            <p className="text-red-500 font-semibold text-lg">City not found!</p>
-          )}
-          {!isLoading && weatherData?.cod === "400" && (
-            <p className="text-red-500 font-semibold text-lg">City can't be empty!</p>
-          )}
+      <>
+        {isLoading
+          ? <SkeletonCard />
+          :
+          <div className={`w-full rounded-xl text-white flex flex-col md:flex-row gap-5 relative z-10 font-poppins`}>
+            <div className="w-full md:w-[70%] flex flex-col gap-5">
+              <Form city={city} setCity={setCity} />
+              {isLoading && <p>Loading...</p>}
+              {!isLoading && weatherData?.cod === "404" && (
+                <p className="text-red-500 font-semibold text-lg">City not found!</p>
+              )}
+              {!isLoading && weatherData?.cod === "400" && (
+                <p className="text-red-500 font-semibold text-lg">City can't be empty!</p>
+              )}
 
-          {!isLoading && weatherData && weatherData?.cod < 400 && (
-            <>
-              <Card weather={weather} mainData={main} name={name} />
-              <HrsForecastCard forecastData={forecastData} />
-              <Description weatherData={weatherData} />
-            </>
-          )}
-        </div>
+              {!isLoading && weatherData && weatherData?.cod < 400 && (
+                <>
+                  <Card weather={weather} mainData={main} name={name} />
+                  <HrsForecastCard forecastData={forecastData} />
+                  <Description weatherData={weatherData} />
+                </>
+              )}
+            </div>
 
-        <div className="w-full md:w-[30%] flex flex-col gap-5">
-          {!isLoading && weatherData && weatherData?.cod < 400 && (
-            <>
+            <div className="w-full md:w-[30%] flex flex-col gap-5">
+              {!isLoading && weatherData && weatherData?.cod < 400 && (
+                <>
 
-              <DaysForecastCard forecastData={forecastData} />
-              <SunRiseSet weatherData={weatherData} />
-            </>
-          )}
-        </div>
-      </div>
+                  <DaysForecastCard forecastData={forecastData} />
+                  <SunRiseSet weatherData={weatherData} />
+                </>
+              )}
+            </div>
+          </div>
+        }
+      </>
     </div>
   );
 }

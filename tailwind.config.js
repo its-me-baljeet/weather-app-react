@@ -14,5 +14,6 @@ export default {
   // tailwind.config.js
 
 
-  plugins: [],
+  plugins: [require('tailwindcss-animate')],
+
 }
